@@ -1,6 +1,6 @@
 # Classification pretraining-regression fine-tuning for compound-target interaction prediction
 
-This repository documents the code used to generate the results for our article. The updated package, which is continuously being developed, can be found at [this repository](https://github.com/atuoei/REP_CPI). Please submit an issue or email samsl@mit.edu with any questions.
+This repository documents the code used to generate the results for our article. The updated package, which is continuously being developed, can be found at [this repository](https://github.com/atuoei/REP_CPI). Please submit an issue or email my19653@163.com with any questions.
 
 ### Sample Usage
 
@@ -19,4 +19,5 @@ This repository documents the code used to generate the results for our article.
   - `broad_alerts.py` -- Identifies globally important substructures
   - `enrichment_test.py` -- Performs enrichment analysis to evaluate the significance of global substructures
 - `disease`: Disease–target association analysis
+
   - `Analyze.ipynb` -- Computes shared and specific targets and performs disease clustering
