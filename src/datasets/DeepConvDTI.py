@@ -80,7 +80,7 @@ class _Dataset(Dataset, DeepConvDTIData):
         return gene,compound,protein,label
 
 class Modeldataset:
-    def __init__(self, df_train, df_val, df_test, pro_dir='../Features/targets.csv', batch_size=128, num_workers=4):
+    def __init__(self, df_train, df_val, df_test, pro_dir='Features/targets.csv', batch_size=128, num_workers=4):
         self.train_ds = _Dataset(df_train, pro_dir)
         self.val_ds   = _Dataset(df_val,   pro_dir)
         self.test_ds  = _Dataset(df_test,  pro_dir)
@@ -93,4 +93,5 @@ class Modeldataset:
                            num_workers=0, collate_fn=_collate)
         test  = DataLoader(self.test_ds, batch_size=self.bs, shuffle=False,
                            num_workers=0, collate_fn=_collate)
+
         return train, val, test
