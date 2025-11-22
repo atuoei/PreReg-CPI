@@ -3,7 +3,7 @@
 This repository documents the code used to generate the results for our article. The updated package, which is continuously being developed, can be found at [this repository](https://github.com/atuoei/REP_CPI). Please submit an issue or email my19653@163.com with any questions.
 
 ### Sample Usage
-
+`cd ./src`
 `python main.py --model DeepCPI --split ck --mode pretrain-finetune`
 
 ### Repository Organization
@@ -21,3 +21,4 @@ This repository documents the code used to generate the results for our article.
 - `disease`: Disease–target association analysis
 
   - `Analyze.ipynb` -- Computes shared and specific targets and performs disease clustering
+
