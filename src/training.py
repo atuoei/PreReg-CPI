@@ -22,13 +22,12 @@ def _to_device(obj, device):
 
 def _unpack_batch(batch):
     """
-    支持：
       (genes, (x1,x2), y)
       (genes, x1, x2, y)
       (x1, x2, y)
       (genes, x, y)
       (x, y)
-    返回: inputs(list/tuple), y(tensor), genes(list或None)
+    Return: inputs(list/tuple), y(tensor), genes(list或None)
     """
     b = list(batch)
     y = b[-1]
@@ -153,3 +152,4 @@ class Trainer:
         yp_all = torch.cat(yp_all, dim=0)
         _, metrics, _ = self._loss_and_metrics(yp_all, y_all)
         return genes_all, y_all.numpy().ravel().tolist(), yp_all.numpy().ravel().tolist(), metrics
+
