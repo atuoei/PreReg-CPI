@@ -39,12 +39,12 @@ class _Dataset(Dataset):
 def _collate(batch):
     genes, smiles_list, prot_list, labels = zip(*batch)
     prot = pad_sequence(prot_list, batch_first=True, padding_value=0.0)
-    # 保留list给模型（与原代码一致）；如需pad，可在此处理
+
     labels = torch.tensor(labels, dtype=torch.float32)
     return list(genes), list(smiles_list), prot, labels
 
 class Modeldataset:
-    def __init__(self, df_train, df_val, df_test, esm_dir='../Features/proallfeat', batch_size=128, num_workers=4):
+    def __init__(self, df_train, df_val, df_test, esm_dir='Features/proallfeat', batch_size=128, num_workers=4):
         self.train_ds = _Dataset(df_train, esm_dir)
         self.val_ds   = _Dataset(df_val,   esm_dir)
         self.test_ds  = _Dataset(df_test,  esm_dir)
@@ -58,5 +58,6 @@ class Modeldataset:
         test  = DataLoader(self.test_ds, batch_size=self.bs, shuffle=False,
                            num_workers=0, collate_fn=_collate)
         return train, val, test
+
 
 
