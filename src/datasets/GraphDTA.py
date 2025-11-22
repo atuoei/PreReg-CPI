@@ -11,7 +11,7 @@ import torch.optim as optim
 import pandas as pd
 from torch.utils.data import Dataset,DataLoader
 
-# 定义dataset
+
 class GraphDTAData(object):
 
     def get_compound(self, smiles):
@@ -103,7 +103,7 @@ class _Dataset(Dataset,GraphDTAData):
         protein = self.get_protein(seq)
         return gene, compound, protein, label
 
-#自定义colloate函数
+
 def _collate(datalist):
 
     def padding(data):
@@ -121,7 +121,7 @@ def _collate(datalist):
     return gene,compound_batch, protein_batch, affinity_batch
 
 class Modeldataset:
-    def __init__(self, df_train, df_val, df_test, pro_dir='../Features/targets.csv', batch_size=128, num_workers=4):
+    def __init__(self, df_train, df_val, df_test, pro_dir='Features/targets.csv', batch_size=128, num_workers=4):
         self.train_ds = _Dataset(df_train, pro_dir)
         self.val_ds   = _Dataset(df_val,   pro_dir)
         self.test_ds  = _Dataset(df_test,  pro_dir)
@@ -135,3 +135,4 @@ class Modeldataset:
         test  = DataLoader(self.test_ds, batch_size=self.bs, shuffle=False,
                            num_workers=0, collate_fn=_collate)
         return train, val, test
+
