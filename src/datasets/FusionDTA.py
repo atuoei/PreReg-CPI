@@ -23,7 +23,7 @@ class _Dataset(Dataset):
         self.encoder = SmilesEncoder()
         self.esm_dir = esm_dir
 
-    @lru_cache(maxsize=4096)  # 缓存常用基因向量
+    @lru_cache(maxsize=4096)  
     def _load_esm(self, gene: str):
         path = os.path.join(self.esm_dir, f"{gene}.pt")
         return torch.load(path, map_location="cpu")
@@ -58,6 +58,7 @@ class Modeldataset:
         test  = DataLoader(self.test_ds, batch_size=self.bs, shuffle=False,
                            num_workers=0, collate_fn=_collate)
         return train, val, test
+
 
 
 
