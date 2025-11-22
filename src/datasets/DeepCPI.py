@@ -7,7 +7,7 @@ from rdkit.Chem import AllChem
 from torch.utils.data import Dataset,DataLoader
 
 
-# 自定义collate函数
+
 def _collate(datalist):
     if len(datalist) == 1:
         datalist = datalist * 2
@@ -65,3 +65,4 @@ class Modeldataset:
                            num_workers=0, collate_fn=_collate)
 
         return train, val, test
+
