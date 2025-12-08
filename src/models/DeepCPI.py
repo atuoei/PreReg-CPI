@@ -65,7 +65,7 @@ class Model(nn.Module):
             nn.Dropout(p=0.2),
         )
 
-        # ==== FiLM: 用蛋白向量调节化合物特征 ====
+        # ==== FiLM ====
         self.film_gamma = nn.Sequential(
             nn.Linear(self.encode2, self.encode2),
             nn.ReLU(),
