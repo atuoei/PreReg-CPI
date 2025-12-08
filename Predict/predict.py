@@ -24,9 +24,16 @@ def weights_init(m):
             nn.init.constant_(m.bias, 0)
 
 
+def weights_init(m):
+    if isinstance(m, (nn.Conv1d, nn.Conv2d, nn.Linear)):
+        nn.init.xavier_uniform_(m.weight.data)
+        if m.bias is not None:
+            nn.init.constant_(m.bias, 0)
+
+
 class Model(nn.Module):
     def __init__(self, args):
-        super(Model, self).__init__()
+        super().__init__()
         self.mol_input_dim = int(args["mol_input_dim"])
         self.seq_input_dim = int(args["seq_input_dim"])
         self.encode1 = int(args["encode1"])
@@ -34,10 +41,10 @@ class Model(nn.Module):
         self.output1 = int(args["output1"])
         self.output2 = int(args["output2"])
         self.output3 = int(args['output3'])
-        
-        """Compound Encoding Module"""
+
+        # ==== Compound Encoder ====
         self.CompoundEncoding = nn.Sequential(
-            nn.Linear(self.mol_input_dim, self.encode1), 
+            nn.Linear(self.mol_input_dim, self.encode1),
             nn.BatchNorm1d(self.encode1),
             nn.ReLU(),
             nn.Dropout(p=0.2),
@@ -47,9 +54,9 @@ class Model(nn.Module):
             nn.Dropout(p=0.2),
         )
 
-        """Protein Encoding Module"""
+        # ==== Protein Encoder ====
         self.ProteinEncoding = nn.Sequential(
-            nn.Linear(self.seq_input_dim, self.encode1), 
+            nn.Linear(self.seq_input_dim, self.encode1),
             nn.BatchNorm1d(self.encode1),
             nn.ReLU(),
             nn.Dropout(p=0.2),
@@ -59,9 +66,21 @@ class Model(nn.Module):
             nn.Dropout(p=0.2),
         )
 
-        """Output Module"""
+        # ==== FiLM ====
+        self.film_gamma = nn.Sequential(
+            nn.Linear(self.encode2, self.encode2),
+            nn.ReLU(),
+            nn.Linear(self.encode2, self.encode2),
+        )
+        self.film_beta = nn.Sequential(
+            nn.Linear(self.encode2, self.encode2),
+            nn.ReLU(),
+            nn.Linear(self.encode2, self.encode2),
+        )
+
+        # ==== Output Head ====
         self.Output = nn.Sequential(
-            nn.Linear(self.encode2*2, self.output1),
+            nn.Linear(self.encode2 * 2, self.output1),
             nn.BatchNorm1d(self.output1),
             nn.ReLU(),
             nn.Dropout(p=0.2),
@@ -78,25 +97,26 @@ class Model(nn.Module):
 
         self.apply(weights_init)
 
-    def forward(self, comp,prot):
+    def forward(self, comp, prot):
+        ca = self.CompoundEncoding(comp)   # [B, encode2]
+        pa = self.ProteinEncoding(prot)    # [B, encode2]
 
-        ca = self.CompoundEncoding(comp)
-        pa = self.ProteinEncoding(prot)
-        # protein = torch.cat((pa,bind_prompt),dim=-1)
-        affinity = self.Output(torch.cat((ca, pa), dim=-1))
+        # --- FiLM: protein-conditioned modulation ---
+        gamma = self.film_gamma(pa)        # [B, encode2]
+        beta  = self.film_beta(pa)         # [B, encode2]
+        ca_film = gamma * ca + beta        # [B, encode2]
 
-
+        affinity = self.Output(torch.cat((ca_film, pa), dim=-1))  # [B, 1]
         return affinity
 
 
-# 自定义collate函数
 def batch_data_process_DeepCPI(datalist):
     if len(datalist) == 1:
         datalist = datalist * 2
         
     datalist = list(zip(*datalist))
     cas,target,compound, protein = datalist
-    # # 确保compound是一个张量，进行squeeze操作
+
 
 
     compound_batch = torch.Tensor(compound)
@@ -229,5 +249,6 @@ for name,df in {'positive':df_positive,'negative':df_negative}:
     df_pivot = df_pred.pivot(index='cas', columns='task', values=0)
     # df_pivot.to_excel('food_mtl.xlsx')
     df_pivot.to_excel(f'{name}_regpred.xlsx')
+
 
     
